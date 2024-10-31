@@ -1,3 +1,29 @@
-.cart-section-container {
-  padding-left: 32px;
+@media screen and (min-width: 768px) {
+  .margin-right {
+    padding-left: 32px;
+  }
+}
+.main-right {
+  border-radius: 16px;
+  .cart-section-container {
+    background-color: #fff;
+    padding: 28px 24px 40px;
+    > h3 {
+      font-size: 24px;
+      color: $Primary;
+    }
+    .empty-cart {
+      text-align: center;
+      > svg {
+        width: 124px;
+        height: auto;
+        margin: 48px 0 28px;
+      }
+      .empty-cart-message {
+        font-size: 14px;
+        color: #c7c7c7;
+        font-weight: 400;
+      }
+    }
+  }
 }

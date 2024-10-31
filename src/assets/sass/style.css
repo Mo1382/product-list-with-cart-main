@@ -50,9 +50,10 @@
   padding: 0;
   position: relative;
   margin-bottom: 36px;
+  border: 0;
 }
 .main-left .cards-wrapper .card .card-header img {
-  border-radius: 6px;
+  border-radius: 12px;
 }
 .main-left .cards-wrapper .card .card-header .add-to-card-btn {
   position: absolute;
@@ -94,8 +95,34 @@
   color: hsl(14, 86%, 42%);
 }
 
-.cart-section-container {
-  padding-left: 32px;
+@media screen and (min-width: 768px) {
+  .margin-right {
+    padding-left: 32px;
+  }
+}
+.main-right {
+  border-radius: 16px;
+}
+.main-right .cart-section-container {
+  background-color: #fff;
+  padding: 28px 24px 40px;
+}
+.main-right .cart-section-container > h3 {
+  font-size: 24px;
+  color: hsl(14, 86%, 42%);
+}
+.main-right .cart-section-container .empty-cart {
+  text-align: center;
+}
+.main-right .cart-section-container .empty-cart > svg {
+  width: 124px;
+  height: auto;
+  margin: 48px 0 28px;
+}
+.main-right .cart-section-container .empty-cart .empty-cart-message {
+  font-size: 14px;
+  color: #c7c7c7;
+  font-weight: 400;
 }
 
 html {
