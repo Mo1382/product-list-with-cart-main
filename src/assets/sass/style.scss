@@ -1,0 +1,22 @@
+@charset "UTF-8";
+
+// Imports
+@import "_variables.scss";
+@import "_reset.scss";
+@import "_utilities.scss";
+@import "_card-section.scss";
+@import "_cart-section.scss";
+@import "_confirmation-modal.scss";
+
+html {
+  font-size: 16px;
+}
+
+body {
+  background-color: $Rose_50;
+}
+
+.main-container {
+  display: flex;
+  justify-content: space-between;
+}
