@@ -13,6 +13,91 @@
   font-weight: 700;
 }
 
+.m-4-5 {
+  margin: 2rem !important;
+}
+
+.m-x-4-5 {
+  margin-right: 2rem !important;
+  margin-left: 2rem !important;
+}
+
+.m-y-4-5 {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+}
+
+.m-e-4-5 {
+  margin-left: 2rem !important;
+}
+
+.m-s-4-5 {
+  margin-right: 2rem !important;
+}
+
+.main-left .category-title {
+  color: hsl(14, 65%, 9%);
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+.main-left .cards-wrapper .card {
+  border: none;
+  background-color: transparent;
+  padding: 0 10px !important;
+  margin-bottom: 24px;
+}
+.main-left .cards-wrapper .card .card-header {
+  padding: 0;
+  position: relative;
+  margin-bottom: 36px;
+}
+.main-left .cards-wrapper .card .card-header img {
+  border-radius: 6px;
+}
+.main-left .cards-wrapper .card .card-header .add-to-card-btn {
+  position: absolute;
+  display: flex;
+  bottom: -23px;
+  padding: 11px 32px;
+  border-radius: 56px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #c0c0c0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+}
+.main-left .cards-wrapper .card .card-header .add-to-card-btn .add-to-card-icon {
+  margin-right: 6px;
+  vertical-align: -18px;
+  margin-bottom: 4px;
+}
+.main-left .cards-wrapper .card .card-header .add-to-card-btn span:last-child {
+  width: 87px;
+}
+.main-left .cards-wrapper .card .card-body {
+  padding: 0;
+}
+.main-left .cards-wrapper .card .card-body .food-title-abreviation {
+  font-size: 17px;
+  font-weight: 400;
+  font-weight: 400;
+  color: #757575;
+  margin-bottom: 8px;
+}
+.main-left .cards-wrapper .card .card-body .food-title {
+  font-size: 19px;
+  font-weight: 400;
+  margin-bottom: 12px;
+}
+.main-left .cards-wrapper .card .card-body .food-price {
+  color: hsl(14, 86%, 42%);
+}
+
+.cart-section-container {
+  padding-left: 32px;
+}
+
 html {
   font-size: 16px;
 }

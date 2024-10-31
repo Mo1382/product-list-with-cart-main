@@ -1,6 +1,26 @@
+// Utilities for font styles
 .thin-font-weight {
   font-weight: $font_weight_thin;
 }
 .bold-font-weight {
   font-weight: $font_weight_bold;
+}
+
+// Utilities for margin
+.m-4-5 {
+  margin: 2rem !important;
+}
+.m-x-4-5 {
+  margin-right: 2rem !important;
+  margin-left: 2rem !important;
+}
+.m-y-4-5 {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+}
+.m-e-4-5 {
+  margin-left: 2rem !important;
+}
+.m-s-4-5 {
+  margin-right: 2rem !important;
 }

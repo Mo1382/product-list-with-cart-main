@@ -1,4 +1,62 @@
 .main-left {
   .category-title {
+    color: $Rose_900;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  .cards-wrapper {
+    .card {
+      border: none;
+      background-color: transparent;
+      padding: 0 10px !important;
+      margin-bottom: 24px;
+      .card-header {
+        padding: 0;
+        position: relative;
+        margin-bottom: 36px;
+        img {
+          border-radius: 6px;
+        }
+        .add-to-card-btn {
+          position: absolute;
+          display: flex;
+          bottom: -23px;
+          padding: 11px 32px;
+          border-radius: 56px;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #c0c0c0;
+          left: 50%;
+          transform: translateX(-50%);
+          background-color: #fff;
+          .add-to-card-icon {
+            margin-right: 6px;
+            vertical-align: -18px;
+            margin-bottom: 4px;
+          }
+          span:last-child {
+            width: 87px;
+          }
+        }
+      }
+      .card-body {
+        padding: 0;
+        .food-title-abreviation {
+          font-size: 17px;
+          font-weight: $font_weight_thin;
+          font-weight: 400;
+          color: #757575;
+          margin-bottom: 8px;
+        }
+        .food-title {
+          font-size: 19px;
+          font-weight: 400;
+          margin-bottom: 12px;
+        }
+        .food-price {
+          color: $Primary;
+        }
+      }
+    }
   }
 }
