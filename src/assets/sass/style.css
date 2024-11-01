@@ -58,7 +58,7 @@
   border-radius: 12px;
   box-shadow: 0 0 40px 2px rgba(0, 0, 0, 0.06);
 }
-.main-left .cards-wrapper .card .card-header .add-to-card-btn {
+.main-left .cards-wrapper .card .card-header .add-to-cart-btn {
   position: absolute;
   display: flex;
   bottom: -23px;
@@ -66,18 +66,56 @@
   border-radius: 56px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #c0c0c0;
+  border: 1px solid #b8a0a1;
   left: 50%;
   transform: translateX(-50%);
   background-color: #fff;
 }
-.main-left .cards-wrapper .card .card-header .add-to-card-btn .add-to-card-icon {
+.main-left .cards-wrapper .card .card-header .add-to-cart-btn .add-to-cart-icon {
   margin-right: 6px;
   vertical-align: -18px;
   margin-bottom: 4px;
 }
-.main-left .cards-wrapper .card .card-header .add-to-card-btn span:last-child {
+.main-left .cards-wrapper .card .card-header .add-to-cart-btn span:last-child {
   width: 87px;
+}
+.main-left .cards-wrapper .card .card-header .add-more-to-cart-btn {
+  background-color: hsl(14, 86%, 42%);
+  display: flex;
+  justify-content: space-between;
+  cursor: initial;
+}
+.main-left .cards-wrapper .card .card-header .add-more-to-cart-btn .minus-item-icon,
+.main-left .cards-wrapper .card .card-header .add-more-to-cart-btn .plus-item-icon {
+  cursor: pointer;
+  line-height: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  border-radius: 18px;
+  border: 1.5px solid white;
+  justify-content: center;
+}
+.main-left .cards-wrapper .card .card-header .add-more-to-cart-btn .minus-item-icon {
+  transform: translateX(-10px);
+}
+.main-left .cards-wrapper .card .card-header .add-more-to-cart-btn .minus-item-icon svg {
+  width: 14px;
+  height: 2px;
+}
+.main-left .cards-wrapper .card .card-header .add-more-to-cart-btn .plus-item-icon {
+  transform: translateX(10px);
+}
+.main-left .cards-wrapper .card .card-header .add-more-to-cart-btn .plus-item-icon svg {
+  width: 10px;
+  height: 10px;
+}
+.main-left .cards-wrapper .card .card-header .add-more-to-cart-btn .items-num {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 400;
 }
 .main-left .cards-wrapper .card .card-body {
   padding: 0;

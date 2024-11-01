@@ -25,3 +25,34 @@ const cardsWithoutPadding = function (direction, cardsList, cardsPerRow) {
 
 cardsWithoutPadding("right", cards, 3);
 cardsWithoutPadding("left", cards, 3);
+
+const addOneToCartBtn = document.querySelector(".add-one-to-cart-btn");
+const addMoreToCartBtns = document.querySelectorAll(".add-more-to-cart-btn");
+
+/**
+ * Sets the width of each element in the provided array to match the width of a reference element.
+ *
+ * @param {Element} refEl - The reference element whose width will be used.
+ * @param {Array<Element>} elements - The array of elements to set the width for.
+ */
+const makeElWidthLikeOneEl = function (refEl, elements) {
+  const refElWidth = getComputedStyle(refEl).width;
+  elements.forEach((el) => {
+    el.style.width = refElWidth;
+  });
+};
+makeElWidthLikeOneEl(addOneToCartBtn, addMoreToCartBtns);
+
+/**
+ * Sets the height of each element in the provided array to match the width of a reference element.
+ *
+ * @param {Element} refEl - The reference element whose height will be used.
+ * @param {Array<Element>} elements - The array of elements to set the height for.
+ */
+const makeElHeightLikeOneEl = function (refEl, elements) {
+  const refElHeight = getComputedStyle(refEl).height;
+  elements.forEach((el) => {
+    el.style.height = refElHeight;
+  });
+};
+makeElHeightLikeOneEl(addOneToCartBtn, addMoreToCartBtns);
