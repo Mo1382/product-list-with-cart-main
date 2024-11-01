@@ -1,0 +1,74 @@
+.order-confirmation-layout {
+  position: fixed;
+  right: 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  overflow: auto;
+  width: 100%;
+  height: 100vh;
+  background-color: #efefef6e;
+  z-index: 100;
+  display: flex;
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  .order-confirmation-modal {
+    padding: 44px 40px 40px;
+    background-color: #fff;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    .order-confirmed-top {
+      .oredered-confiremed-icon {
+        margin-bottom: 20px;
+      }
+      .oredered-confiremed-title {
+        font-size: 32px;
+        color: #3a3a3a;
+        margin-bottom: 6px;
+        font-weight: 700;
+      }
+      .oredered-confiremed-message {
+        font-size: 13px;
+        font-weight: 400;
+        color: #8d8d8d;
+      }
+    }
+    .ordered-confiremed-items-list {
+      margin: 32px 0;
+      background-color: $Rose_100;
+      padding: 28px 32px 28px 28px;
+      border-radius: 8px;
+
+      .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .item-detail {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          .item-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-right: 16px;
+          }
+        }
+        .confiremed-item-last-price {
+          font-size: 17px;
+          font-weight: $font_weight_thin;
+        }
+      }
+      .item:not(:nth-last-child(2)) {
+        margin-bottom: 28px;
+      }
+      .item:nth-last-child(2) {
+        margin-bottom: 44px;
+      }
+    }
+  }
+}

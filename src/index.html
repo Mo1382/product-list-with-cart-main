@@ -29,8 +29,9 @@
     <title>Product list with cart</title>
   </head>
   <body>
+    <div class="order-confirmation-layout">
     <div class="order-confirmation-modal">
-      <div class="order-confirmed-top">
+        <div class="order-confirmed-top">
         <div class="oredered-confiremed-icon">
           <svg
             width="48"
@@ -54,26 +55,53 @@
       </div>
       <div class="ordered-confiremed-items-list">
          <div class="item">
-                <div class="item-thumb">
-                  <img src="assets/images/image-creme-brulee-thumbnail.jpg" alt="">
-                </div>
                 <div class="item-detail">
-                  <h5 class="item-name">Vanilla Bean Creme Brulee</h5>
+                  <div class="item-thumb">
+                  <img class="img-fluid" src="assets/images/image-creme-brulee-thumbnail.jpg" alt="">
+                </div>
+               
+                  <div class="item-description">
+                    <h5 class="item-name">Vanilla Bean Creme Brulee</h5>
                   <span class="item-count"><span>4</span>x</span>
                   
-                    <span class="confiremed-item-price"
+                    <span class="item-price"
                       >@$7.00</span>
+                  </div>
                   
+               
                 </div>
-                <span class="price-per-items confiremed-item">$28.00</span></span
+                 <span class="confiremed-item-last-price">$28.00</span></span
               </div>
-              <div class="cart-sum-price">
+             
+            </div>
+            <div class="item">
+                <div class="item-detail">
+                  <div class="item-thumb">
+                  <img class="img-fluid" src="assets/images/image-tiramisu-desktop.jpg" alt="">
+                </div>
+               
+                  <div class="item-description">
+                    <h5 class="item-name">Classic Tiramisu</h5>
+                  <span class="item-count"><span>1</span>x</span>
+                  
+                    <span class="item-price"
+                      >@$5.50</span>
+                  </div>
+                  
+               
+                </div>
+                 <span class="confiremed-item-last-price">$5.50</span></span
+              </div>
+             
+            </div>
+             <div class="cart-sum-price">
               <span>Order Total</span>
               <span class="sum-price">$28.00</span>
             </div>
-            </div>
-            <button class="primary-btn">Start New Order</button>
       </div>
+      
+            <button class="primary-btn">Start New Order</button>
+    </div>
     </div>
     <div class="main-container container px-0">
      <div class="row mx-0">
@@ -439,7 +467,7 @@
       <div class="main-right col-12 col-sm-12 col-md-4 mx-0">
         <div class="cart-section-container">
           <h3>Your cart (<span>0</span>)</h3>
-           <!-- <div class="empty-cart">
+           <div class="empty-cart">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="128"
@@ -496,8 +524,8 @@
               />
             </svg>
             <p class="empty-cart-message">Your added items will appear here</p>
-          </div>  -->
-           <div class="cart-items"> 
+          </div> 
+           <!-- <div class="cart-items"> 
             <div class="items-wrapper">
               <div class="item">
                 <div class="item-detail">
@@ -577,8 +605,8 @@
               </span>
               <span class="delivery-message">This is a carbon-neutral delivery</span>
             </div>
-            <button class="primary-btn order-confirmation-btn">Confirm Order</button>
-          </div> 
+            <button class="primary-btn">Confirm Order</button>
+          </div>  -->
         </div>
       </div>
      </div>
