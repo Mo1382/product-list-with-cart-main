@@ -6,6 +6,7 @@ const emptyCart = document.querySelector(".empty-cart");
 const selectedItemsNumEl = document.querySelector(
   ".cart-section-container span"
 );
+let totalPriceEl;
 
 // Data
 const windowWidth = window.innerWidth;
@@ -17,6 +18,7 @@ const deviceCategories = [
 let totalPrice;
 let selectedItemsNum;
 const refBtnWidthHieght = {};
+let selectedItemsByOrder = [];
 
 /**
  * Fetches data from the provided URL and returns the parsed JSON data.
@@ -241,6 +243,9 @@ cardsWrapper.addEventListener("click", function (e) {
   selectedItem.number++;
   selectedItem.itemsPrice = selectedItem.number * selectedItem.price;
 
+  // Updating array of selected items by the order that selected
+  selectedItemsByOrder.push(selectedItem);
+
   // Updating the total price
   totalPrice += selectedItem.itemsPrice;
 
@@ -275,7 +280,7 @@ cardsWrapper.addEventListener("click", function (e) {
 </div>
 `;
 
-  // Rerendering selected items in "cart" section
+  // Finding selected items in "cart" section
   const selectedItems = appData.filter((item) => item.selected);
 
   // Calculating selected items number and render them in UI
@@ -304,7 +309,44 @@ cardsWrapper.addEventListener("click", function (e) {
     });
   }
 
-  renderSelectedItems(selectedItems);
-  const totalPriceEl = document.querySelector(".total-price");
+  renderSelectedItems(selectedItemsByOrder);
+  totalPriceEl = document.querySelector(".total-price");
   totalPriceEl.textContent = `$${totalPrice}`;
+});
+
+// Increasing item in card and cart sections when user clicks on plus btn
+cardsWrapper.addEventListener("click", function (e) {
+  const clicked = e.target;
+  // Checking strategy
+  if (!clicked.closest(".plus-item-icon")) return;
+
+  // Getting the title of the card clicked
+  const cardClickedTitle = clicked
+    .closest(".card")
+    .querySelector(".food-title").textContent;
+
+  // Finding the increased item in the appData array
+  const increasedItem = appData.find((item) => item.name === cardClickedTitle);
+
+  // Updating the increased item in the appData array
+  increasedItem.number++;
+  increasedItem.itemsPrice = increasedItem.number * increasedItem.price;
+
+  // Finding selected items in "cart" section
+  const selectedItems = appData.filter((item) => item.selected);
+
+  // Updating the total price and rerender it in UI
+  totalPrice = selectedItems.reduce((totalPrice, item) => {
+    return totalPrice + item.itemsPrice;
+  }, 0);
+  totalPriceEl.textContent = `$${totalPrice}`;
+
+  // Render new item number
+  const itemNumEl = clicked
+    .closest(".add-more-to-cart-btn")
+    .querySelector(".items-num");
+  itemNumEl.textContent = increasedItem.number;
+
+  // Render new item number in cart section
+  renderSelectedItems(selectedItemsByOrder);
 });
