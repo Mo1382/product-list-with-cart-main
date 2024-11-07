@@ -28,6 +28,9 @@
     }
     .cart-items {
       margin-top: 24px;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
       .items-wrapper {
         margin-bottom: 40px;
         .item {
