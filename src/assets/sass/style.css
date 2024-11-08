@@ -38,8 +38,7 @@
 }
 
 .hide-el {
-  display: none;
-  opacity: 0;
+  visibility: hidden !important;
 }
 
 .main-left .category-title {
@@ -243,11 +242,12 @@
   background-color: rgba(239, 239, 239, 0.431372549);
   z-index: 100;
   display: flex;
-  display: none;
   justify-content: center;
   align-items: center;
 }
 .order-confirmation-layout .order-confirmation-modal {
+  opacity: 0;
+  transition: opacity 0.5s ease;
   padding: 44px 40px 40px;
   background-color: #fff;
   border-radius: 16px;

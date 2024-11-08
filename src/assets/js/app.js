@@ -8,6 +8,16 @@ const selectedItemsNumEl = document.querySelector(
 );
 let totalPriceEl;
 const cartSectionContainer = document.querySelector(".cart-section-container");
+const orderConfirmationLayout = document.querySelector(
+  ".order-confirmation-layout"
+);
+const orderConfirmationModal = document.querySelector(
+  ".order-confirmation-modal"
+);
+const orderedConfiremedItemsList = document.querySelector(
+  ".ordered-confiremed-items-list"
+);
+const modalTotalPriceEl = document.querySelector("#modal-total-price");
 
 // Data
 const windowWidth = window.innerWidth;
@@ -323,7 +333,7 @@ cardsWrapper.addEventListener("click", function (e) {
   }
 
   renderSelectedItems(selectedItemsByOrder);
-  totalPriceEl = document.querySelector(".total-price");
+  totalPriceEl = document.querySelector("#cart-total-price");
   totalPriceEl.textContent = `$${totalPrice}`;
 });
 
@@ -494,4 +504,40 @@ cartSectionContainer.addEventListener("click", function (e) {
 
   // Rendering new item number in cart section
   renderSelectedItems(selectedItemsByOrder);
+});
+
+// Open confirmation modal with cart items when user clicks "confirm order" btn
+cartSectionContainer.addEventListener("click", function (e) {
+  const clicked = e.target;
+
+  // Checking strategy
+  if (!clicked.classList.contains("confirm-order-btn")) return;
+
+  // Open confirmation modal
+  orderConfirmationLayout.classList.remove("hide-el");
+  orderConfirmationModal.style.opacity = 1;
+
+  // Rendering selected items and total price in modal
+  selectedItemsByOrder.forEach((item) => {
+    // Creating and inserting item element based on every selected item
+    const itemHTML = `
+<div class="item">
+  <div class="item-detail">
+    <div class="item-thumb">
+      <img class="img-fluid" src="${item.image.thumbnail}" alt="">
+    </div>
+    <div class="item-description">
+      <h5 class="item-name">${item.name}</h5>
+      <span class="item-count"><span>${item.number}</span>x</span>
+      <span class="item-price">@$${item.price}</span>
+    </div>
+  </div>
+  <span class="confiremed-item-last-price">$${item.itemsPrice}</span>
+</div>
+    `;
+
+    orderedConfiremedItemsList.insertAdjacentHTML("afterbegin", itemHTML);
+  });
+  console.log(totalPrice);
+  modalTotalPriceEl.textContent = `$${totalPrice}`;
 });

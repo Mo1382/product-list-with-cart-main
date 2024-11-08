@@ -10,11 +10,12 @@
   background-color: #efefef6e;
   z-index: 100;
   display: flex;
-  display: none;
   justify-content: center;
   align-items: center;
 
   .order-confirmation-modal {
+    opacity: 0;
+    transition: opacity 0.5s ease;
     padding: 44px 40px 40px;
     background-color: #fff;
     border-radius: 16px;
@@ -36,6 +37,7 @@
         color: #8d8d8d;
       }
     }
+
     .ordered-confiremed-items-list {
       margin: 32px 0;
       background-color: $Rose_100;
