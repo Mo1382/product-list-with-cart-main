@@ -1,18 +1,18 @@
 // Elements selections
 const cardsWrapper = document.querySelector(".cards-wrapper .row");
+let cards;
+let addOneToCartBtn;
+let addToCartBtns;
 const itemsWrapper = document.querySelector(".items-wrapper");
 const cartItemsWrapper = document.querySelector(".cart-items");
 const emptyCart = document.querySelector(".empty-cart");
 const selectedItemsNumEl = document.querySelector(
   ".cart-section-container span"
 );
-let totalPriceEl;
+const totalPriceEl = document.querySelector("#cart-total-price");
 const cartSectionContainer = document.querySelector(".cart-section-container");
 const orderConfirmationLayout = document.querySelector(
   ".order-confirmation-layout"
-);
-const orderConfirmationModal = document.querySelector(
-  ".order-confirmation-modal"
 );
 const orderedConfiremedItemsList = document.querySelector(
   ".ordered-confiremed-items-list"
@@ -20,6 +20,9 @@ const orderedConfiremedItemsList = document.querySelector(
 const modalTotalPriceEl = document.querySelector("#modal-total-price");
 const submitNewOrderBtn = document.querySelector("#submit-new-order-btn");
 let addMoreToCartBtns;
+const ordereConfiremedItemsListEl = document.querySelector(
+  ".ordered-confiremed-items-list"
+);
 
 // Data
 const windowWidth = window.innerWidth;
@@ -33,6 +36,8 @@ let selectedItemsNum;
 const refBtnWidthHieght = {};
 let selectedItemsByOrder = [];
 
+// Functions
+
 /**
  * Fetches data from the provided URL and returns the parsed JSON data.
  *
@@ -45,6 +50,7 @@ const getData = async function (url) {
   return data;
 };
 
+// Recieving data from the json file
 const appData = await getData("http://127.0.0.1:5500/src/assets/data.json");
 
 /**
@@ -70,7 +76,7 @@ const userDevice = recognizeDevice(deviceCategories);
  * @param {HTMLElement} cardsWrapperEl - The HTML element to insert the rendered cards into.
  * @returns {Promise<void>} - A Promise that resolves when the cards have been rendered.
  */
-const cardRender = async function (data, cardsWrapperEl) {
+const cardRender = function (data, cardsWrapperEl) {
   data.forEach((item) => {
     const cardHTML = `<div class="card px-0 col-12 col-sm-6 offset-sm-0 col-md-6 col-lg-4">
             <div class="card-header">
@@ -96,8 +102,7 @@ const cardRender = async function (data, cardsWrapperEl) {
 cardRender(appData, cardsWrapper);
 
 // Move here after cardRender to access this elements
-const cards = document.querySelectorAll(".card");
-const addToCartBtns = document.querySelectorAll(".add-to-cart-btn");
+cards = document.querySelectorAll(".card");
 
 /**
  * Sets the width of each element in the provided array to match the width of a reference element.
@@ -185,18 +190,10 @@ const appInit = function (data) {
 
   // Implementing initialization for total price
   totalPrice = 0;
+  totalPriceEl.textContent = `$${totalPrice}`;
 };
 
 appInit(appData);
-
-// Event listeners
-
-// Rerender cards with new images when window is resized to diffrent screen
-window.addEventListener("resize", function () {
-  recognizeDevice(deviceCategories);
-
-  cardRender("http://127.0.0.1:5500/src/assets/data.json", cardsWrapper);
-});
 
 /**
  * Renders the selected items in the shopping cart.
@@ -204,8 +201,11 @@ window.addEventListener("resize", function () {
  * @param {Array} selectedItemsArr - Array of selected item objects containing name, number, price, and itemsPrice
  * @returns {void}
  */
-const renderSelectedItems = function (selectedItemsArr) {
-  itemsWrapper.innerHTML = "";
+const renderSelectedItems = function (
+  selectedItemsArr,
+  wrapperEl = itemsWrapper
+) {
+  wrapperEl.innerHTML = "";
   selectedItemsArr.forEach((item) => {
     const itemHTML = `
     <div class="item">
@@ -234,49 +234,91 @@ const renderSelectedItems = function (selectedItemsArr) {
         </svg>
       </div>
     </div>`;
-    itemsWrapper.insertAdjacentHTML("afterbegin", itemHTML);
+    wrapperEl.insertAdjacentHTML("afterbegin", itemHTML);
   });
 };
 
 /**
- * Calculates the number of selected items and renders it in the UI.
+ * Finds the selected item in the provided array based on the clicked element's title.
  *
- * @param {Array} selectedItemsArr - An array of selected item objects to calculate its length.
- * @param {HTMLElement} elToRender - The DOM element to render the selected items count.
- * @returns {void}
+ * @param {Array} ArrToSearch - The array to search for the selected item.
+ * @param {HTMLElement} clickedEL - The clicked element that triggered the search.
+ * @param {string} wrapperElClass - The class name of the wrapper element for the clicked item.
+ * @param {string} titelElClass - The class name of the title element for the clicked item.
+ * @returns {Object} The selected item object from the provided array.
  */
-const renderSelectedItemsNum = function (selectedItemsArr, elToRender) {
-  selectedItemsNum = selectedItemsArr.length;
-  elToRender.textContent = selectedItemsNum;
-};
-
-// Adding item to cart when user clicks on "Add to Cart" btn
-cardsWrapper.addEventListener("click", function (e) {
-  const clicked = e.target;
-  // Checking strategy
-  if (!clicked.closest(".add-one-to-cart-btn")) return;
-
-  // Getting the title of the card clicked
-  const cardClickedTitle = clicked
-    .closest(".card")
-    .querySelector(".food-title").textContent;
+const findActiveItem = function (
+  ArrToSearch,
+  clickedEL,
+  wrapperElClass,
+  titelElClass
+) {
+  // Getting the title of the item clicked
+  const itemClickedTitle = clickedEL
+    .closest(`.${wrapperElClass}`)
+    .querySelector(`.${titelElClass}`).textContent;
 
   // Finding the selected item in the appData array
-  const selectedItem = appData.find((item) => item.name === cardClickedTitle);
+  const selectedItem = ArrToSearch.find(
+    (item) => item.name === itemClickedTitle
+  );
 
-  // Updating the selected item in the appData array
-  selectedItem.selected = true;
-  selectedItem.number++;
-  selectedItem.itemsPrice = selectedItem.number * selectedItem.price;
+  return selectedItem;
+};
 
-  // Updating array of selected items by the order that selected
-  selectedItemsByOrder.push(selectedItem);
+/**
+ * Updates the number and price of an item in the cart.
+ *
+ * @param {Object} item - The item object to update.
+ * @param {boolean} [isAdded=true] - Indicates whether the item is being added or removed.
+ * @returns {void}
+ */
+const updateItemNumberAndPrice = function (
+  item,
+  isAdded = true,
+  isRemoved = false
+) {
+  if (isAdded) {
+    item.number++;
+  }
+  if (!isAdded) {
+    item.number--;
+  }
+  if (isRemoved) {
+    item.number = 0;
+  }
+  item.itemsPrice = item.number * item.price;
+};
 
-  // Updating the total price
-  totalPrice += selectedItem.itemsPrice;
+/**
+ * Calculates and renders the total price of selected items.
+ *
+ * @param {Array} data - The array of data containing the items.
+ * @param {HTMLElement} elToRender - The HTML element to render the total price.
+ * @returns {void}
+ */
+const calculateAndRenderTotalPrice = function (
+  data = appData,
+  elToRender = totalPriceEl
+) {
+  // Finding selected items in data array
+  const selectedItems = data.filter((item) => item.selected);
 
-  // Rendering plus/minus btn instead of "Add to Cart"
-  const clickedBtn = clicked.closest(".add-one-to-cart-btn");
+  // Updating the total price and rerender it in UI
+  totalPrice = selectedItems.reduce((totalPrice, item) => {
+    return totalPrice + item.itemsPrice;
+  }, 0);
+  elToRender.textContent = `$${totalPrice}`;
+};
+
+/**
+ * Renders a plus/minus button for an item in the cart instead of "Add to Cart" button.
+ *
+ * @param {HTMLElement} clickedEl - The clicked element that triggered the function.
+ * @returns {void}
+ */
+const renderPlusMinusBtn = function (clickedEl) {
+  const clickedBtn = clickedEl.closest(".add-one-to-cart-btn");
   clickedBtn.classList.replace("add-one-to-cart-btn", "add-more-to-cart-btn");
   clickedBtn.innerHTML = ` 
     <div class="minus-item-icon">
@@ -305,231 +347,150 @@ cardsWrapper.addEventListener("click", function (e) {
       </svg>
 </div>
 `;
+};
 
-  // Finding selected items in "cart" section
-  const selectedItems = appData.filter((item) => item.selected);
-
-  renderSelectedItemsNum(selectedItems, selectedItemsNumEl);
-
-  // Moving here after new plus/minus btn created to access and manipulate them
-  const addOneToCartBtn = document.querySelector(".add-one-to-cart-btn");
-  addMoreToCartBtns = document.querySelectorAll(".add-more-to-cart-btn");
-  if (selectedItemsNum === 1) {
-    makeElWidthLikeOneEl(addOneToCartBtn, addMoreToCartBtns);
-    makeElHeightLikeOneEl(addOneToCartBtn, addMoreToCartBtns);
-  } else {
-    makeElWidthLikeOneEl(addOneToCartBtn, addMoreToCartBtns, true);
-    makeElHeightLikeOneEl(addOneToCartBtn, addMoreToCartBtns, true);
-  }
-
-  // Checking that is it the first selected item or not
-  if (selectedItemsNum === 1) {
-    // Hiding empty message and show cart items with animation
-    emptyCart.style.display = "none";
-    emptyCart.style.opacity = 0;
-
-    cartItemsWrapper.style.display = "block";
-    requestAnimationFrame(() => {
-      cartItemsWrapper.style.opacity = 1;
-    });
-  }
-
-  renderSelectedItems(selectedItemsByOrder);
-  totalPriceEl = document.querySelector("#cart-total-price");
-  totalPriceEl.textContent = `$${totalPrice}`;
-});
-
-// Increasing item in card and cart sections when user clicks on plus btn
-cardsWrapper.addEventListener("click", function (e) {
-  const clicked = e.target;
-  // Checking strategy
-  if (!clicked.closest(".plus-item-icon")) return;
-
-  // Getting the title of the card clicked
-  const cardClickedTitle = clicked
-    .closest(".card")
-    .querySelector(".food-title").textContent;
-
-  // Finding the increased item in the appData array
-  const increasedItem = appData.find((item) => item.name === cardClickedTitle);
-
-  // Updating the increased item in the appData array
-  increasedItem.number++;
-  increasedItem.itemsPrice = increasedItem.number * increasedItem.price;
-
-  // Finding selected items in "cart" section
-  const selectedItems = appData.filter((item) => item.selected);
-
-  // Updating the total price and rerender it in UI
-  totalPrice = selectedItems.reduce((totalPrice, item) => {
-    return totalPrice + item.itemsPrice;
-  }, 0);
-  totalPriceEl.textContent = `$${totalPrice}`;
-
-  // Rendering new item number
-  const itemNumEl = clicked
-    .closest(".add-more-to-cart-btn")
-    .querySelector(".items-num");
-  itemNumEl.textContent = increasedItem.number;
-
-  // Rendering new item number in cart section
-  renderSelectedItems(selectedItemsByOrder);
-});
-
-// Decreasing item in card and cart sections when user clicks on minus btn
-cardsWrapper.addEventListener("click", function (e) {
-  const clicked = e.target;
-  // Checking strategy
-  if (!clicked.closest(".minus-item-icon")) return;
-
-  // Getting the title of the card clicked
-  const cardClickedTitle = clicked
-    .closest(".card")
-    .querySelector(".food-title").textContent;
-
-  // Finding the decreased item in the appData array
-  const decreasedItem = appData.find((item) => item.name === cardClickedTitle);
-
-  // Updating the decreased item in the appData array
-  decreasedItem.number--;
-  decreasedItem.itemsPrice = decreasedItem.number * decreasedItem.price;
-
-  // Finding selected items in "cart" section
-  const selectedItems = appData.filter((item) => item.selected);
-
-  // Updating the total price and rerender it in UI
-  totalPrice = selectedItems.reduce((totalPrice, item) => {
-    return totalPrice + item.itemsPrice;
-  }, 0);
-  totalPriceEl.textContent = `$${totalPrice}`;
-
-  if (decreasedItem.number === 0) {
-    // Render "Add to Cart" btn instead of plus/minus
-    const clickedBtn = clicked.closest(".add-more-to-cart-btn");
-    clickedBtn.classList.replace("add-more-to-cart-btn", "add-one-to-cart-btn");
-    clickedBtn.innerHTML = ` 
+/**
+ * Renders an "Add to Cart" button for an item in the cart instead of plus/minus button.
+ *
+ * @param {HTMLElement} clickedEl - The clicked element that triggered the function.
+ * @returns {void}
+ */
+const renderAddToCartBtn = function (btnToReplace) {
+  btnToReplace.classList.replace("add-more-to-cart-btn", "add-one-to-cart-btn");
+  btnToReplace.innerHTML = ` 
                 <div class="add-to-cart-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" fill="none" viewBox="0 0 21 20"><g fill="#C73B0F" clip-path="url(#a)"><path d="M6.583 18.75a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5ZM15.334 18.75a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5ZM3.446 1.752a.625.625 0 0 0-.613-.502h-2.5V2.5h1.988l2.4 11.998a.625.625 0 0 0 .612.502h11.25v-1.25H5.847l-.5-2.5h11.238a.625.625 0 0 0 .61-.49l1.417-6.385h-1.28L16.083 10H5.096l-1.65-8.248Z"/><path d="M11.584 3.75v-2.5h-1.25v2.5h-2.5V5h2.5v2.5h1.25V5h2.5V3.75h-2.5Z"/></g><defs><clipPath id="a"><path fill="#fff" d="M.333 0h20v20h-20z" /></clipPath></defs></svg>
                 </div>
-                <span>Add to Cart</span>
-`;
+                <span>Add to Cart</span>`;
+};
 
-    // Removing decreased item from selectedItemsByOrder array to avoid rendering it again
-    decreasedItem.selected = false;
-    const decreasedItemIndex = selectedItemsByOrder.indexOf(decreasedItem);
-    selectedItemsByOrder.splice(decreasedItemIndex, 1);
+/**
+ * Calculates the number of selected items and renders it in the UI.
+ *
+ * @param {Array} selectedItemsArr - An array of selected item objects to calculate its length.
+ * @param {HTMLElement} elToRender - The DOM element to render the selected items count.
+ * @returns {void}
+ */
+const renderSelectedItemsNum = function (selectedItemsArr, elToRender) {
+  selectedItemsNum = selectedItemsArr.length;
+  elToRender.textContent = selectedItemsNum;
+};
 
-    renderSelectedItemsNum(selectedItemsByOrder, selectedItemsNumEl);
+/**
+ * Switches the visibility of two elements, hiding one and showing the other with an animation.
+ *
+ * @param {HTMLElement} elToHide - The element to hide.
+ * @param {HTMLElement} elToShow - The element to show.
+ * @returns {void}
+ */
+const switchVisibilityOfTwoEls = function (elToHide, elToShow) {
+  // Hiding element
+  elToHide.style.display = "none";
+  elToHide.style.opacity = 0;
 
-    // Checking that is there any selected item left or not
-    if (selectedItemsNum === 0) {
-      // Hiding cart items and show empty message with animation
-      cartItemsWrapper.style.display = "none";
-      cartItemsWrapper.style.opacity = 0;
-
-      emptyCart.style.display = "block";
-      requestAnimationFrame(() => {
-        emptyCart.style.opacity = 1;
-      });
-    }
-  } else {
-    // Rendering new item number
-    const itemNumEl = clicked
-      .closest(".add-more-to-cart-btn")
-      .querySelector(".items-num");
-    itemNumEl.textContent = decreasedItem.number;
-  }
-  // Rendering new item number in cart section
-  renderSelectedItems(selectedItemsByOrder);
-});
-
-// Removing item in cart section when user clicks on remove icon
-cartSectionContainer.addEventListener("click", function (e) {
-  const clicked = e.target;
-  // Checking strategy
-  if (!clicked.closest(".remove-item-icon")) return;
-
-  // Getting the title of the item clicked to remove
-  const itemClickedTitle = clicked
-    .closest(".item")
-    .querySelector(".item-name").textContent;
-
-  // Finding the removed item in the appData array
-  const removedItem = appData.find((item) => item.name === itemClickedTitle);
-
-  // Updating the removed item in the appData array
-  removedItem.number = 0;
-  removedItem.itemsPrice = removedItem.number * removedItem.price;
-
-  // Finding selected items in "cart" section
-  const selectedItems = appData.filter((item) => item.selected);
-
-  // Updating the total price and rerender it in UI
-  totalPrice = selectedItems.reduce((totalPrice, item) => {
-    return totalPrice + item.itemsPrice;
-  }, 0);
-  totalPriceEl.textContent = `$${totalPrice}`;
-
-  // Removing removed item from selectedItemsByOrder array to avoid rendering it again
-  removedItem.selected = false;
-  const removedItemIndex = selectedItemsByOrder.indexOf(removedItem);
-  selectedItemsByOrder.splice(removedItemIndex, 1);
-
-  renderSelectedItemsNum(selectedItemsByOrder, selectedItemsNumEl);
-
-  // Render "Add to Cart" btn instead of plus/minus
-  appData.forEach((item, i) => {
-    const btn = addToCartBtns[i];
-
-    if (item.selected) return;
-    btn.classList.replace("add-more-to-cart-btn", "add-one-to-cart-btn");
-
-    btn.innerHTML = `
-                  <div class="add-to-cart-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" fill="none" viewBox="0 0 21 20"><g fill="#C73B0F" clip-path="url(#a)"><path d="M6.583 18.75a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5ZM15.334 18.75a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5ZM3.446 1.752a.625.625 0 0 0-.613-.502h-2.5V2.5h1.988l2.4 11.998a.625.625 0 0 0 .612.502h11.25v-1.25H5.847l-.5-2.5h11.238a.625.625 0 0 0 .61-.49l1.417-6.385h-1.28L16.083 10H5.096l-1.65-8.248Z"/><path d="M11.584 3.75v-2.5h-1.25v2.5h-2.5V5h2.5v2.5h1.25V5h2.5V3.75h-2.5Z"/></g><defs><clipPath id="a"><path fill="#fff" d="M.333 0h20v20h-20z" /></clipPath></defs></svg>
-                  </div>
-                  <span>Add to Cart</span>
-  `;
+  // Showing element with animation
+  elToShow.style.display = "block";
+  requestAnimationFrame(() => {
+    elToShow.style.opacity = 1;
   });
+};
 
-  // Checking that is there any selected item left or not
-  if (selectedItemsNum === 0) {
-    // Hiding cart items and show empty message with animation
-    cartItemsWrapper.style.display = "none";
-    cartItemsWrapper.style.opacity = 0;
+/**
+ * Renders the updated number of an item in the specified element.
+ *
+ * @param {HTMLElement} clickedEL - The clicked element that triggered the function.
+ * @param {string} wrapperElClass - The class name of the wrapper element containing the number element.
+ * @param {string} numberElementClass - The class name of the number element to update.
+ * @param {Object} item - The item object containing the updated number.
+ * @returns {void}
+ */
+const renderNewItemNum = function (
+  clickedEL,
+  wrapperElClass,
+  numberElementClass,
+  item
+) {
+  const itemNumEl = clickedEL
+    .closest(`.${wrapperElClass}`)
+    .querySelector(`.${numberElementClass}`);
+  itemNumEl.textContent = item.number;
+};
 
-    emptyCart.style.display = "block";
-    requestAnimationFrame(() => {
-      emptyCart.style.opacity = 1;
-    });
-  }
+/**
+ * Adds a new item in cart to a given array.
+ *
+ * @param {Object} item - The item to add to the array and make it selected.
+ * @param {Array} arrToAdd - The array to add the item to.
+ * @returns {void}
+ */
+const addToCart = function (item, arrToAdd) {
+  item.selected = true;
+  arrToAdd.push(item);
+};
 
-  // Rendering new item number in cart section
-  renderSelectedItems(selectedItemsByOrder);
-});
+/**
+ * Removes a removed item in cart item from a given array.
+ *
+ * @param {Object} item - The item to remove from the array and make it unselected.
+ * @param {Array} arrToRemove - The array to remove the item from.
+ * @returns {void}
+ */
+const removeFromCart = function (item, arrToRemove) {
+  item.selected = false;
+  const itemIndex = arrToRemove.indexOf(item);
+  arrToRemove.splice(itemIndex, 1);
+};
 
-// Open confirmation modal with cart items when user clicks "confirm order" btn
-cartSectionContainer.addEventListener("click", function (e) {
-  const clicked = e.target;
+/**
+ * Opens a modal by removing the "hide-el" class from the modal wrapper element and setting the opacity of the modal itself to 1.
+ *
+ * @param {HTMLElement} modalWrapper - The wrapper element for the modal.
+ * @returns {void}
+ */
+const openModal = function (modalWrapper) {
+  modalWrapper.classList.remove("hide-el");
+  modalWrapper.querySelector(".order-confirmation-modal").style.opacity = 1;
+};
 
-  // Checking strategy
-  if (!clicked.classList.contains("confirm-order-btn")) return;
+/**
+ * Closes a modal by adding the "hide-el" class to the modal wrapper element and setting the opacity of the modal itself to 0.
+ *
+ * @param {HTMLElement} modalWrapper - The wrapper element for the modal.
+ * @returns {void}
+ */
+const closeModal = function (modalWrapper) {
+  modalWrapper.classList.add("hide-el");
+  modalWrapper.querySelector(".order-confirmation-modal").style.opacity = 0;
+};
 
-  // Opening confirmation modal
-  orderConfirmationLayout.classList.remove("hide-el");
-  orderConfirmationModal.style.opacity = 1;
-
-  // Removing previous items from confiremedItemsList
-  const previousConfiremedItems = document.querySelectorAll(
-    ".ordered-confiremed-items-list .item"
+/**
+ * Clears all items from a given wrapper element that have the "item" class.
+ *
+ * @param {HTMLElement} wrapperEl - The wrapper element containing the items to be cleared.
+ * @returns {void}
+ */
+const clearItems = function (wrapperEl) {
+  const itemsToClear = [...wrapperEl.children].filter((item) =>
+    item.classList.contains("item")
   );
-  previousConfiremedItems.forEach((item) => {
+
+  itemsToClear.forEach((item) => {
     item.remove();
   });
+};
 
-  // Rendering selected items and total price in modal
-  selectedItemsByOrder.forEach((item) => {
-    // Creating and inserting item element based on every selected item
+/**
+ * Renders a list of confirmed order items in the provided wrapper element.
+ *
+ * @param {Array<Object>} selectedItemsArr - An array of selected items to be rendered.
+ * @param {HTMLElement} [wrapperEl=orderedConfiremedItemsList] - The wrapper element to insert the rendered items into. Defaults to `orderedConfiremedItemsList`.
+ * @returns {void}
+ */
+const renderConfiremedItems = function (
+  selectedItemsArr,
+  wrapperEl = orderedConfiremedItemsList
+) {
+  selectedItemsArr.forEach((item) => {
     const itemHTML = `
 <div class="item">
   <div class="item-detail">
@@ -546,52 +507,197 @@ cartSectionContainer.addEventListener("click", function (e) {
 </div>
     `;
 
-    orderedConfiremedItemsList.insertAdjacentHTML("afterbegin", itemHTML);
+    wrapperEl.insertAdjacentHTML("afterbegin", itemHTML);
+  });
+};
+
+/**
+ * Empties the contents of the provided array.
+ *
+ * @param {Array} arr - The array to be emptied.
+ * @returns {void}
+ */
+const makeArrEmpty = function (arr) {
+  arr.splice(0, arr.length);
+};
+
+// Event listeners
+
+// Rerender cards with new images when window is resized to diffrent screen
+window.addEventListener("resize", function () {
+  recognizeDevice(deviceCategories);
+
+  cardRender("http://127.0.0.1:5500/src/assets/data.json", cardsWrapper);
+});
+
+// Adding item to cart when user clicks on "Add to Cart" btn
+cardsWrapper.addEventListener("click", function (e) {
+  const clicked = e.target;
+  // Checking strategy
+  if (!clicked.closest(".add-one-to-cart-btn")) return;
+
+  // Finding the selected item in the appData array
+  const selectedItem = findActiveItem(appData, clicked, "card", "food-title");
+
+  addToCart(selectedItem, selectedItemsByOrder);
+
+  // Updating the selected item in the appData array
+  updateItemNumberAndPrice(selectedItem);
+
+  // Updating array of selected items by the order that selected
+
+  renderPlusMinusBtn(clicked);
+
+  renderSelectedItemsNum(selectedItemsByOrder, selectedItemsNumEl);
+
+  // Moving here after new plus/minus btn created to access and manipulate them
+  addToCartBtns = document.querySelectorAll(".add-to-cart-btn");
+  addOneToCartBtn = document.querySelector(".add-one-to-cart-btn");
+  addMoreToCartBtns = document.querySelectorAll(".add-more-to-cart-btn");
+
+  if (selectedItemsNum === 1) {
+    makeElWidthLikeOneEl(addOneToCartBtn, addMoreToCartBtns);
+    makeElHeightLikeOneEl(addOneToCartBtn, addMoreToCartBtns);
+  } else {
+    makeElWidthLikeOneEl(addOneToCartBtn, addMoreToCartBtns, true);
+    makeElHeightLikeOneEl(addOneToCartBtn, addMoreToCartBtns, true);
+  }
+
+  // Checking that is it the first selected item or not
+  if (selectedItemsNum === 1) {
+    // Hiding empty message and show cart items with animation
+    switchVisibilityOfTwoEls(emptyCart, cartItemsWrapper);
+  }
+
+  renderSelectedItems(selectedItemsByOrder);
+
+  calculateAndRenderTotalPrice();
+});
+
+// Increasing item in card and cart sections when user clicks on plus btn
+cardsWrapper.addEventListener("click", function (e) {
+  const clicked = e.target;
+
+  // Checking strategy
+  if (!clicked.closest(".plus-item-icon")) return;
+
+  // Finding the increased item in the appData array
+  const increasedItem = findActiveItem(appData, clicked, "card", "food-title");
+
+  updateItemNumberAndPrice(increasedItem);
+
+  renderNewItemNum(clicked, "add-more-to-cart-btn", "items-num", increasedItem);
+
+  renderSelectedItems(selectedItemsByOrder);
+
+  calculateAndRenderTotalPrice();
+});
+
+// Decreasing item in card and cart sections when user clicks on minus btn
+cardsWrapper.addEventListener("click", function (e) {
+  const clicked = e.target;
+
+  // Checking strategy
+  if (!clicked.closest(".minus-item-icon")) return;
+
+  // Finding the decreased item in the appData array
+  const decreasedItem = findActiveItem(appData, clicked, "card", "food-title");
+
+  renderNewItemNum(clicked, "add-more-to-cart-btn", "items-num", decreasedItem);
+
+  updateItemNumberAndPrice(decreasedItem, false);
+
+  calculateAndRenderTotalPrice();
+
+  if (decreasedItem.number === 0) {
+    const clickedBtn = clicked.closest(".add-more-to-cart-btn");
+    renderAddToCartBtn(clickedBtn);
+
+    removeFromCart(decreasedItem, selectedItemsByOrder);
+
+    renderSelectedItemsNum(selectedItemsByOrder, selectedItemsNumEl);
+  }
+
+  // Checking that is there any selected item left or not
+  if (selectedItemsNum === 0) {
+    // Hiding cart items and show empty message with animation
+    switchVisibilityOfTwoEls(cartItemsWrapper, emptyCart);
+  }
+
+  // Updating cart section after decreasing item
+  renderSelectedItems(selectedItemsByOrder);
+});
+
+// Removing item in cart section when user clicks on remove icon
+cartSectionContainer.addEventListener("click", function (e) {
+  const clicked = e.target;
+
+  // Checking strategy
+  if (!clicked.closest(".remove-item-icon")) return;
+
+  // Finding the removed item in the appData array
+  const removedItem = findActiveItem(appData, clicked, "item", "item-name");
+
+  updateItemNumberAndPrice(removedItem, false, true);
+
+  calculateAndRenderTotalPrice();
+
+  removeFromCart(removedItem, selectedItemsByOrder);
+
+  renderSelectedItemsNum(selectedItemsByOrder, selectedItemsNumEl);
+
+  // Rendering "Add to Cart" btn instead of plus/minus btn for removed items
+  appData.forEach((item, i) => {
+    const btn = addToCartBtns[i];
+
+    if (item.selected) return;
+    renderAddToCartBtn(btn);
   });
 
-  modalTotalPriceEl.textContent = `$${totalPrice}`;
+  // Checking that is there any selected item left or not
+  if (selectedItemsNum === 0) {
+    // Hiding cart items and show empty message with animation
+    switchVisibilityOfTwoEls(cartItemsWrapper, emptyCart);
+  }
+
+  // Updating cart section after removing item
+  renderSelectedItems(selectedItemsByOrder);
+});
+
+// Open confirmation modal with cart items when user clicks "confirm order" btn
+cartSectionContainer.addEventListener("click", function (e) {
+  const clicked = e.target;
+
+  // Checking strategy
+  if (!clicked.classList.contains("confirm-order-btn")) return;
+
+  openModal(orderConfirmationLayout);
+
+  // Removing previous items from confiremedItemsList
+  clearItems(ordereConfiremedItemsListEl);
+
+  // Rendering selected items
+  renderConfiremedItems(selectedItemsByOrder);
+
+  calculateAndRenderTotalPrice(undefined, modalTotalPriceEl);
 });
 
 // Reseting app and closing modal after clicking "Submit new order" btn by user
 submitNewOrderBtn.addEventListener("click", function () {
-  // Resetting items in appData array
-  appData.forEach((item) => {
-    item.selected = false;
-    item.number = 0;
-    item.itemsPrice = item.number * item.price;
-  });
+  // Resetting items and total price in appData array
+  appInit(appData);
 
-  // Resetting total price and rendering it
-  totalPrice = 0;
-  totalPriceEl.textContent = `$${totalPrice}`;
+  makeArrEmpty(selectedItemsByOrder);
 
-  // Removing items in selectedItemsByOrder array
-  selectedItemsByOrder.splice(0, selectedItemsByOrder.length);
-
-  // Resetting selectedItemsNum and rendering it
   renderSelectedItemsNum(selectedItemsByOrder, selectedItemsNumEl);
 
   // Hiding cart items and show empty message with animation
-  cartItemsWrapper.style.display = "none";
-  cartItemsWrapper.style.opacity = 0;
-
-  emptyCart.style.display = "block";
-  requestAnimationFrame(() => {
-    emptyCart.style.opacity = 1;
-  });
+  switchVisibilityOfTwoEls(cartItemsWrapper, emptyCart);
 
   // Rendering "Add to Cart" btn instead of plus/minus
   addMoreToCartBtns.forEach((btn) => {
-    btn.classList.replace("add-more-to-cart-btn", "add-one-to-cart-btn");
-    btn.innerHTML = `
-                  <div class="add-to-cart-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" fill="none" viewBox="0 0 21 20"><g fill="#C73B0F" clip-path="url(#a)"><path d="M6.583 18.75a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5ZM15.334 18.75a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5ZM3.446 1.752a.625.625 0 0 0-.613-.502h-2.5V2.5h1.988l2.4 11.998a.625.625 0 0 0 .612.502h11.25v-1.25H5.847l-.5-2.5h11.238a.625.625 0 0 0 .61-.49l1.417-6.385h-1.28L16.083 10H5.096l-1.65-8.248Z"/><path d="M11.584 3.75v-2.5h-1.25v2.5h-2.5V5h2.5v2.5h1.25V5h2.5V3.75h-2.5Z"/></g><defs><clipPath id="a"><path fill="#fff" d="M.333 0h20v20h-20z" /></clipPath></defs></svg>
-                  </div>
-                  <span>Add to Cart</span>
-  `;
+    renderAddToCartBtn(btn);
   });
 
-  // Closing modal
-  orderConfirmationLayout.classList.add("hide-el");
-  orderConfirmationModal.style.opacity = 0;
+  closeModal(orderConfirmationLayout);
 });
