@@ -34,8 +34,8 @@ Users should be able to:
 
 ### Links
 
-- Solution URL: [Add solution URL here](https://github.com/Mo1382/product-list-with-cart-main)
-- Live Site URL: [Add live site URL here](https://your-live-site-url.com)
+- Solution URL: [Link](https://github.com/Mo1382/product-list-with-cart-main)
+- Live Site URL: [Link](https://mo1382.github.io/product-list-with-cart-main/)
 
 ## My process
 
