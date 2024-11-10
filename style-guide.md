@@ -9,6 +9,14 @@ The designs were created to the following widths:
 
 > 💡 These are just the design sizes. Ensure content is responsive and meets WCAG requirements by testing the full range of screen sizes from 320px to large screens.
 
+## Breakpoints
+
+- 576px
+- 768px
+- 992px
+- 1200px
+- 1400px
+
 ## Colors
 
 - Red: hsl(14, 86%, 42%)
