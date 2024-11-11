@@ -1,3 +1,23 @@
+import renderInitHtml from "./htmlRender.js";
+
+/**
+ * Fetches data from the provided URL and returns the parsed JSON data.
+ *
+ * @param {string} url - The URL to fetch data from.
+ * @returns {Promise<any>} - A Promise with data form the URL..
+ */
+const getData = async function (url) {
+  const res = await fetch(url);
+  const data = await res.json();
+  return data;
+};
+
+// Recieving data from the json file
+const appData = await getData("http://127.0.0.1:5500/src/assets/data.json");
+
+// Rendering the initial HTML just after the data is recieved
+document.body.insertAdjacentHTML("beforeend", renderInitHtml());
+
 // Elements selections
 const cardsWrapper = document.querySelector(".cards-wrapper .row");
 let cards;
@@ -37,21 +57,6 @@ const refBtnWidthHieght = {};
 let selectedItemsByOrder = [];
 
 // Functions
-
-/**
- * Fetches data from the provided URL and returns the parsed JSON data.
- *
- * @param {string} url - The URL to fetch data from.
- * @returns {Promise<any>} - A Promise with data form the URL..
- */
-const getData = async function (url) {
-  const res = await fetch(url);
-  const data = await res.json();
-  return data;
-};
-
-// Recieving data from the json file
-const appData = await getData("http://127.0.0.1:5500/src/assets/data.json");
 
 /**
  * Recognizes the device type based on the current window width and a set of breakpoints.
