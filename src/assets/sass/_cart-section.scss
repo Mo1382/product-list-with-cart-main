@@ -53,6 +53,9 @@
               height: 10px;
               vertical-align: initial;
             }
+            &:hover {
+              transform: scale(1.1);
+            }
           }
         }
         .item:not(:last-child) {

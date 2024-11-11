@@ -11,6 +11,8 @@ The designs were created to the following widths:
 
 ## Breakpoints
 
+- Bootstrap breakpoints
+
 - 576px
 - 768px
 - 992px

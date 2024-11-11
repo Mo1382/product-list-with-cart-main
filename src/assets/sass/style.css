@@ -118,12 +118,18 @@
   width: 14px;
   height: 2px;
 }
+.main-left .cards-wrapper .card .card-header .add-more-to-cart-btn .minus-item-icon:hover {
+  transform: translateX(-10px) scale(1.1);
+}
 .main-left .cards-wrapper .card .card-header .add-more-to-cart-btn .plus-item-icon {
   transform: translateX(10px);
 }
 .main-left .cards-wrapper .card .card-header .add-more-to-cart-btn .plus-item-icon svg {
   width: 10px;
   height: 10px;
+}
+.main-left .cards-wrapper .card .card-header .add-more-to-cart-btn .plus-item-icon:hover {
+  transform: translateX(10px) scale(1.1);
 }
 .main-left .cards-wrapper .card .card-header .add-more-to-cart-btn .items-num {
   font-size: 14px;
@@ -206,6 +212,9 @@
   width: 10px;
   height: 10px;
   vertical-align: initial;
+}
+.main-right .cart-section-container .cart-items .items-wrapper .item .remove-item-icon:hover {
+  transform: scale(1.1);
 }
 .main-right .cart-section-container .cart-items .items-wrapper .item:not(:last-child) {
   margin-bottom: 28px;
@@ -360,4 +369,13 @@ body {
   font-size: 16px;
   font-weight: 400;
   border: none;
+}
+
+.cta-btn-hover {
+  transition: background-color 0.5s ease, border-color 0.5s ease;
+}
+
+.cta-btn-hover:hover {
+  background-color: hsl(14, 95.78%, 34.78%);
+  border-color: hsl(14, 99%, 22.57%);
 }/*# sourceMappingURL=style.css.map */
