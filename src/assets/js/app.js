@@ -13,7 +13,7 @@ const getData = async function (url) {
 };
 
 // Recieving data from the json file
-const appData = await getData("http://127.0.0.1:5500/src/assets/data.json");
+const appData = await getData("src/assets/data.json");
 
 // Rendering the initial HTML just after the data is recieved
 document.body.insertAdjacentHTML("beforeend", renderInitHtml());
